@@ -19,7 +19,6 @@ const loginUser = async (req,res) => {
 
     let foundedUser = await client.query(`select * from users where email = $1`, [email]);
     if(foundedUser.rowCount === 0) await client.query(`insert into users(name,email)values($1,$2)`,[name,email])
-    else return;
 
     res.status(200).json({msg:"Logged in successfully"})
 }

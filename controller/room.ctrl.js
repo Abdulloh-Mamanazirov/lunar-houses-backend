@@ -43,7 +43,7 @@ const addRoom = async (req,res)=>{
 
     await client.query(`INSERT INTO room(number_of_rooms, price, kv, company_id, complex_id)VALUES($1,$2,$3,$4,$5)`,[number_of_rooms,price,kv,foundedComplex.rows[0].company_id, foundedComplex.rows[0].id])
 
-    res.status(200).send("Room added successfully")
+    res.status(200).send("Added successfully")
 }
 
 const deleteRoom = async (req, res) => {

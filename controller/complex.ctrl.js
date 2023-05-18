@@ -53,7 +53,7 @@ const addComplex = async (req, res) => {
     [name, address, company_id.rows[0].id]
   );
 
-  res.status(200).send("Complex added successfully");
+  res.status(200).send("Added successfully");
 };
 
 const deleteComplex = async (req, res) => {

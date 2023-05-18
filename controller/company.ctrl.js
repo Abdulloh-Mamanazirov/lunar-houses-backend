@@ -44,7 +44,7 @@ const addCompany = async (req, res) => {
     [name, image, jwt.verify(token, process.env.SECRET_KEY)]
   );
 
-  res.status(200).send("Company added successfully");
+  res.status(200).send("Added successfully");
 };
 
 const deleteCompany = async (req, res) => {

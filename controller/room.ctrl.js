@@ -90,7 +90,7 @@ const updateRoom = async (req, res) => {
   kv = kv ? kv : foundedRoom.rows[0].kv;
 
   try {
-    let res = await client.query(
+    await client.query(
       `update room set number_of_rooms = $1, price = $2, kv = $3 where id = $4`,
       [number_of_rooms, price, kv, id]
     );

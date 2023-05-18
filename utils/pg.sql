@@ -90,4 +90,84 @@ INSERT INTO banks(name, image, max_loan, starting_payment, service_fee)
     ('SQB', 'https://i.ytimg.com/vi/934JxNHpArk/maxresdefault.jpg', 300000000, 15, 2500000),
     ('NBU', 'https://upload.wikimedia.org/wikipedia/commons/e/e7/NBU_new_logo.jpg',500000000, 12, 1800000);
 
-select * from banks where max_loan < 420000000; 
+select * from banks where max_loan > 420000000; 
+
+-- CALCULATIONS
+CREATE TABLE calculations(
+    id TEXT UNIQUE NOT NULL DEFAULT uuid_generate_v4(),
+    total INT NOT NULL,
+    starting INT NOT NULL,
+    monthly INT NOT NULL,
+    user_id TEXT NOT NULL,
+    CONSTRAINT fk_user_id
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+);
+INSERT INTO calculations(total, starting, monthly, user_id)VALUES(52000000, 12000000, 40000000, 'b3e767c3-34f7-4ce9-873a-779e9e817179');
+
+-- CALCULATOR
+CREATE OR REPLACE FUNCTION totalcalculator(roomP integer, roomKv integer, sp integer, d integer) RETURNS TEXT AS $$
+DECLARE
+    totalP INT;
+    startingP INT;
+    monthlyP INT;
+BEGIN
+    totalP = roomP * roomKv; 
+    startingP = ((roomP * roomKv) / 100) * sp; 
+    monthlyP = ((roomP * roomKv)-(((roomP * roomKv)/100)*sp)) / (d * 12);
+    RETURN totalP + startingP + monthlyP;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION totalcalculator(roomP integer, roomKv integer) RETURNS INT AS $$
+DECLARE
+    totalP INT;
+BEGIN
+    RETURN roomP * roomKv;
+END;
+$$ LANGUAGE plpgsql;
+SELECT totalcalculator(2000000,78)
+
+CREATE OR REPLACE FUNCTION startingcalculator(roomP integer, roomKv integer, sp integer) RETURNS INT AS $$
+DECLARE
+    startingP INT;
+BEGIN
+    RETURN ((roomP * roomKv) / 100) * sp;
+END;
+$$ LANGUAGE plpgsql;
+SELECT startingcalculator(2000000,78, 150000)
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION calculator(roomP integer, roomKv integer, sp integer, d integer) RETURNS INTEGER[] AS $$
+DECLARE
+  numbers INTEGER[];
+BEGIN
+  numbers := ARRAY[roomP * roomKv, ((roomP * roomKv) / 100) * sp, ((roomP * roomKv)-(((roomP * roomKv)/100)*sp)) / (d * 12)];
+  RETURN numbers;
+END;
+$$ LANGUAGE plpgsql;
+SELECT calculator(12000,55,17,10);
+
+-- SAVED HOUSES
+CREATE TABLE saved_houses(
+    id TEXT UNIQUE NOT NULL DEFAULT uuid_generate_v4(),
+    company_id TEXT NOT NULL, CONSTRAINT fk_company_id FOREIGN KEY (company_id) REFERENCES company(id),
+    complex_id TEXT NOT NULL, CONSTRAINT fk_complex_id FOREIGN KEY (complex_id) REFERENCES complex(id),
+    room_id TEXT NOT NULL, CONSTRAINT fk_room_id FOREIGN KEY (room_id) REFERENCES room(id),
+    bank_id TEXT NOT NULL, CONSTRAINT fk_bank_id FOREIGN KEY (bank_id) REFERENCES banks(id),
+    user_id TEXT NOT NULL, CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id),
+    duration TEXT NOT NULL
+);
+INSERT INTO saved_houses(company_id, complex_id, room_id, bank_id, user_id, duration)VALUES();
+
+SELECT u.name, cpy.name company_name, cpx.name complex_name, cpx.address complex_address, r.number_of_rooms, r.price, r.kv, b.name, sh.duration FROM saved_houses sh JOIN users u ON sh.user_id = u.id JOIN company cpy ON sh.company_id = cpy.id JOIN complex cpx ON sh.complex_id = cpx.id JOIN room r ON sh.room_id = r.id JOIN banks b ON sh.bank_id = b.id WHERE u.id = '';
